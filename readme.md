@@ -7,6 +7,7 @@ An Express API for extracting features from OpenStreetMap using the Overpass API
 - Extract buildings, roads, waterways, power lines, and more from OpenStreetMap
 - Filter by feature types
 - Define search area using polygon coordinates
+- Convert line features to polygon geometries using the `forcepolygon` option
 - Nicely formatted JSON output
 - Interactive API documentation
 
@@ -46,7 +47,8 @@ The server will start on port 3000 (by default) and the API documentation will b
     { "lat": 32.270, "lng": -97.790 },
     { "lat": 32.260, "lng": -97.790 }
   ],
-  "featureTypes": ["building", "highway", "waterway", "power"]
+  "featureTypes": ["building", "highway", "waterway", "power"],
+  "forcepolygon": false
 }
 ```
 
@@ -90,6 +92,24 @@ The server will start on port 3000 (by default) and the API documentation will b
 - `power`: Power lines and related infrastructure
 - `landuse`: Land use designation areas
 - `boundary`: Administrative boundaries
+
+## Force Polygon Feature
+
+The API includes a `forcepolygon` parameter (default: `false`) that allows you to convert all line features (such as roads and waterways) into polygon geometries. When enabled:
+
+- Line features (LineString geometry) are converted to area features (Polygon geometry)
+- The conversion creates a small buffer around the original line to form a closed shape
+- This is useful for visualization purposes or when you need all features to be represented as areas
+- Building features are already polygons and remain unchanged
+
+Example request with `forcepolygon` enabled:
+```json
+{
+  "polygon": [...],
+  "featureTypes": ["highway", "waterway"],
+  "forcepolygon": true
+}
+```
 
 ## Client Example
 

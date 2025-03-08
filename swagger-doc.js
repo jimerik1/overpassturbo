@@ -63,6 +63,10 @@
  *             type: string
  *             enum: [highway, building, waterway, power, landuse, boundary]
  *           description: Types of features to extract
+ *         forcepolygon:
+ *           type: boolean
+ *           description: When true, converts all line features to polygon geometries
+ *           default: false
  *
  *     FeatureResponse:
  *       type: object

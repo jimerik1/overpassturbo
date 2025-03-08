@@ -14,7 +14,7 @@ app.use(cors());
 
 // Validate request body middleware
 const validateRequest = (req, res, next) => {
-  const { polygon, featureTypes } = req.body;
+  const { polygon, featureTypes, forcepolygon } = req.body;
   
   // Check if polygon exists and is an array
   if (!polygon || !Array.isArray(polygon)) {
@@ -48,13 +48,18 @@ const validateRequest = (req, res, next) => {
     }
   }
   
+  // Validate forcepolygon if present (optional parameter)
+  if (forcepolygon !== undefined && typeof forcepolygon !== 'boolean') {
+    return res.status(400).json({ error: 'forcepolygon must be a boolean value (true or false)' });
+  }
+  
   next();
 };
 
 // Main endpoint to get features
 app.post('/api/features', validateRequest, async (req, res) => {
   try {
-    const { polygon, featureTypes } = req.body;
+    const { polygon, featureTypes, forcepolygon = false } = req.body;
     
     // Format polygon for Overpass query
     const polyStr = polygon.map(p => `${p.lat} ${p.lng}`).join(' ');
@@ -87,8 +92,8 @@ app.post('/api/features', validateRequest, async (req, res) => {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
     
-    // Process and format the response
-    const processedFeatures = processOverpassResponse(response.data);
+    // Process and format the response, passing forcepolygon option
+    const processedFeatures = processOverpassResponse(response.data, forcepolygon);
     
     res.json(processedFeatures);
   } catch (error) {
@@ -100,8 +105,37 @@ app.post('/api/features', validateRequest, async (req, res) => {
   }
 });
 
+// Function to convert LineString to Polygon by creating a small buffer
+function lineToPolygon(coordinates) {
+  if (coordinates.length < 2) return coordinates;
+  
+  // Small offset value for creating width (adjust as needed)
+  const OFFSET = 0.00005; // roughly 5-6 meters
+  
+  // Create a new array to hold polygon coordinates
+  const polygonCoords = [];
+  
+  // First, add all the original coordinates
+  for (let i = 0; i < coordinates.length; i++) {
+    polygonCoords.push({...coordinates[i]});
+  }
+  
+  // Then, add offset coordinates in reverse order to create a closed polygon
+  for (let i = coordinates.length - 1; i >= 0; i--) {
+    polygonCoords.push({
+      lat: coordinates[i].lat + OFFSET,
+      lng: coordinates[i].lng + OFFSET
+    });
+  }
+  
+  // Add the first point again to close the polygon
+  polygonCoords.push({...polygonCoords[0]});
+  
+  return polygonCoords;
+}
+
 // Process Overpass API response into a nicer format
-function processOverpassResponse(overpassData) {
+function processOverpassResponse(overpassData, forcepolygon = false) {
   if (!overpassData || !overpassData.elements || !Array.isArray(overpassData.elements)) {
     return { features: [] };
   }
@@ -124,12 +158,36 @@ function processOverpassResponse(overpassData) {
     // Format geometry
     let geometry;
     if (element.type === 'way') {
+      // Convert points to our format
+      const coordinates = element.geometry.map(point => ({ lat: point.lat, lng: point.lon }));
+      
+      // Determine geometry type based on element type and forcepolygon flag
+      let geometryType;
+      let finalCoordinates;
+      
+      // If it's a building, it's already a polygon
+      if (featureType === 'building') {
+        geometryType = 'Polygon';
+        finalCoordinates = coordinates;
+      } 
+      // If forcepolygon is true, convert LineString to Polygon
+      else if (forcepolygon) {
+        geometryType = 'Polygon';
+        finalCoordinates = lineToPolygon(coordinates);
+      }
+      // Otherwise, keep it as a LineString
+      else {
+        geometryType = 'LineString';
+        finalCoordinates = coordinates;
+      }
+      
       geometry = {
-        type: featureType === 'building' ? 'Polygon' : 'LineString',
-        coordinates: element.geometry.map(point => ({ lat: point.lat, lng: point.lon }))
+        type: geometryType,
+        coordinates: finalCoordinates
       };
     } else {
       // For other element types like relations
+      // These are typically administrative boundaries or other complex geometries
       geometry = {
         type: 'Complex',
         coordinates: element.geometry ? 

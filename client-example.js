@@ -13,12 +13,16 @@ const polygon = [
 // Feature types we want to retrieve
 const featureTypes = ['building', 'highway', 'waterway', 'power'];
 
+// Set to true to convert all lines to polygons
+const forcepolygon = true;
+
 // Make the API request
 async function getFeatures() {
   try {
     const response = await axios.post('http://localhost:3000/api/features', {
       polygon,
-      featureTypes
+      featureTypes,
+      forcepolygon
     });
     
     console.log(`Found ${response.data.metadata.count} features:`);
@@ -27,16 +31,30 @@ async function getFeatures() {
     console.log(`- Water features: ${response.data.features.filter(f => f.type === 'water').length}`);
     console.log(`- Utilities: ${response.data.features.filter(f => f.type === 'utility').length}`);
     
+    // Example - log the geometry types
+    console.log('\nGeometry Types:');
+    const geometryTypes = {};
+    response.data.features.forEach(feature => {
+      const type = feature.geometry.type;
+      geometryTypes[type] = (geometryTypes[type] || 0) + 1;
+    });
+    
+    Object.entries(geometryTypes).forEach(([type, count]) => {
+      console.log(`- ${type}: ${count}`);
+    });
+    
     // Example - log the first feature of each type
     console.log('\nExample features:');
     const buildingExample = response.data.features.find(f => f.type === 'building');
     if (buildingExample) {
       console.log('Building:', buildingExample.name, `(${buildingExample.id})`);
+      console.log('  Geometry Type:', buildingExample.geometry.type);
     }
     
     const roadExample = response.data.features.find(f => f.type === 'road');
     if (roadExample) {
       console.log('Road:', roadExample.name, `(${roadExample.id})`);
+      console.log('  Geometry Type:', roadExample.geometry.type);
     }
     
     // You could save the response to a file
