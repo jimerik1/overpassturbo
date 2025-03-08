@@ -1,0 +1,58 @@
+{
+	"info": {
+		"_postman_id": "4ff5d68d-bea1-4615-9abc-f1f2ae620698",
+		"name": "Get boundary features (Overpass turbo)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12388855"
+	},
+	"item": [
+		{
+			"name": "Docs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api-docs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api-docs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get features",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"polygon\": [\n    { \"lat\": 32.260, \"lng\": -97.790 },\n    { \"lat\": 32.260, \"lng\": -97.780 },\n    { \"lat\": 32.270, \"lng\": -97.780 },\n    { \"lat\": 32.270, \"lng\": -97.790 },\n    { \"lat\": 32.260, \"lng\": -97.790 }\n  ],\n  \"featureTypes\": [\"building\", \"highway\", \"waterway\", \"power\"]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/features",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"features"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
