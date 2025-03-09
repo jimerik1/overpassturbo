@@ -8,6 +8,7 @@ An Express API for extracting features from OpenStreetMap using the Overpass API
 - Filter by feature types
 - Define search area using polygon coordinates
 - Convert line features to polygon geometries using the `forcepolygon` option
+- Customize buffer size for polygon conversion using the `buffersize` parameter
 - Nicely formatted JSON output
 
 ## Installation
@@ -65,7 +66,8 @@ The API will be available at http://localhost:3000 (or your custom port).
     { "lat": 32.260, "lng": -97.790 }
   ],
   "featureTypes": ["building", "highway", "waterway", "power"],
-  "forcepolygon": false
+  "forcepolygon": false,
+  "buffersize": 0.000009
 }
 ```
 
@@ -125,6 +127,24 @@ Example request with `forcepolygon` enabled:
   "polygon": [...],
   "featureTypes": ["highway", "waterway"],
   "forcepolygon": true
+}
+```
+
+## Buffer Size Customization
+
+When using `forcepolygon: true`, you can optionally specify a `buffersize` parameter to control the width of the buffer created around line features:
+
+- `buffersize` is specified in degrees (default: 0.00005, approximately 5-6 meters)
+- Smaller values create thinner polygons (e.g., 0.000009 is approximately 1 meter)
+- Larger values create wider polygons
+
+Example request with custom buffer size:
+```json
+{
+  "polygon": [...],
+  "featureTypes": ["highway", "waterway"],
+  "forcepolygon": true,
+  "buffersize": 0.000009
 }
 ```
 

@@ -32,7 +32,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"polygon\": [\n    { \"lat\": 32.260, \"lng\": -97.790 },\n    { \"lat\": 32.260, \"lng\": -97.780 },\n    { \"lat\": 32.270, \"lng\": -97.780 },\n    { \"lat\": 32.270, \"lng\": -97.790 },\n    { \"lat\": 32.260, \"lng\": -97.790 }\n  ],\n  \"featureTypes\": [\"building\", \"highway\", \"waterway\", \"power\"],\n  \"forcepolygon\": true\n}\n",
+					"raw": "{\n  \"polygon\": [\n    { \"lat\": 32.260, \"lng\": -97.790 },\n    { \"lat\": 32.260, \"lng\": -97.780 },\n    { \"lat\": 32.270, \"lng\": -97.780 },\n    { \"lat\": 32.270, \"lng\": -97.790 },\n    { \"lat\": 32.260, \"lng\": -97.790 }\n  ],\n  \"featureTypes\": [\"building\", \"highway\", \"waterway\", \"power\"],\n  \"forcepolygon\": true,\n  \"buffersize\": 0.00005\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"

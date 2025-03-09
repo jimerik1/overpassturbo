@@ -16,13 +16,18 @@ const featureTypes = ['building', 'highway', 'waterway', 'power'];
 // Set to true to convert all lines to polygons
 const forcepolygon = true;
 
+// Set buffer size for line-to-polygon conversion (in degrees)
+// 0.000009 is approximately 1 meter
+const buffersize = 0.000009;
+
 // Make the API request
 async function getFeatures() {
   try {
     const response = await axios.post('http://localhost:3000/api/features', {
       polygon,
       featureTypes,
-      forcepolygon
+      forcepolygon,
+      buffersize
     });
     
     console.log(`Found ${response.data.metadata.count} features:`);
