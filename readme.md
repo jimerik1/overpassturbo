@@ -9,9 +9,10 @@ An Express API for extracting features from OpenStreetMap using the Overpass API
 - Define search area using polygon coordinates
 - Convert line features to polygon geometries using the `forcepolygon` option
 - Nicely formatted JSON output
-- Interactive API documentation
 
 ## Installation
+
+### Standard Installation
 
 1. Clone this repository:
    ```
@@ -29,7 +30,23 @@ An Express API for extracting features from OpenStreetMap using the Overpass API
    npm start
    ```
 
-The server will start on port 3000 (by default) and the API documentation will be available at http://localhost:3000/api-docs
+The server will start on port 3000 (by default).
+
+### Docker Installation
+
+The application can be easily deployed using Docker:
+
+1. Build and start the container:
+   ```
+   docker compose up --build
+   ```
+
+2. To use a custom port (e.g., 8080):
+   ```
+   HOST_PORT=8080 docker compose up --build
+   ```
+
+The API will be available at http://localhost:3000 (or your custom port).
 
 ## API Usage
 
@@ -121,8 +138,3 @@ The Overpass API has rate limits, so please use responsibly. For large areas or 
 
 1. Implementing caching
 2. Breaking large areas into smaller queries
-3. Adding rate limiting to your service
-
-## License
-
-MIT
